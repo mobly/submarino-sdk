@@ -55,6 +55,16 @@ class Manager extends ManagerAbstract
             ['itemId' => $order->getId()]), $order->getStatus()->toJson());
     }
 
+    public function getTotal(array $parameters = [])
+    {
+        return parent::getTotal(array_merge([
+            'status'        => null,
+            'purchaseDate'  => null,
+            'store'         => null,
+            'siteId'        => null,
+        ], $parameters));
+    }
+
     /**
      * Confirmação de recebimento de pedido.
      *

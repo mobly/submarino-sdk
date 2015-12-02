@@ -50,4 +50,10 @@ abstract class ManagerAbstract extends CommonAbstract implements ManagerInterfac
 
         return false;
     }
+
+    public function getTotal(array $parameters = [])
+    {
+        $data = parent::fetch(1, 1, $parameters);
+        return $data->getTotal();
+    }
 }
