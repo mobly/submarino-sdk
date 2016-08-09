@@ -104,6 +104,22 @@ class ProductTest extends TestCaseAbstract
     /**
      * @dataProvider dataProviderProducts
      */
+    public function testPossuiObjetoMarketStructure($data)
+    {
+        $product = $this->factory($data);
+        $productMarketStructure = $product->getMarketStructure();
+        $this->assertInstanceOf('Gpupo\SubmarinoSdk\Entity\Product\MarketStructure', $productMarketStructure);
+        $this->assertEquals($data['marketStructure']['categoryId'], $productMarketStructure->getCategoryId());
+        $this->assertEquals($data['marketStructure']['subCategoryId'], $productMarketStructure->getSubCategoryId());
+        $this->assertEquals($data['marketStructure']['familyId'], $productMarketStructure->getFamilyId());
+        $this->assertEquals($data['marketStructure']['subFamilyId'], $productMarketStructure->getSubFamilyId());
+
+        return $product;
+    }
+
+    /**
+     * @dataProvider dataProviderProducts
+     */
     public function testEntregaJson($data)
     {
         $product = $this->factory($data);
@@ -117,6 +133,12 @@ class ProductTest extends TestCaseAbstract
         foreach (array('name', 'model',  'warrantyTime') as $key) {
             $this->assertArrayHasKey($key, $array['manufacturer']);
             $this->assertEquals($data['manufacturer'][$key], $array['manufacturer'][$key]);
+        }
+
+        $this->assertArrayHasKey('marketStructure', $array);
+        foreach (array('categoryId', 'subCategoryId',  'familyId', 'subFamilyId') as $key) {
+            $this->assertArrayHasKey($key, $array['marketStructure']);
+            $this->assertEquals($data['marketStructure'][$key], $array['marketStructure'][$key]);
         }
 
         $this->assertEquals($data['nbm']['number'], $array['nbm']['number']);

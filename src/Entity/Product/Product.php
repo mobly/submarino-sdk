@@ -23,6 +23,8 @@ use Gpupo\CommonSdk\Entity\EntityInterface;
  * @method setSku(Gpupo\SubmarinoSdk\Entity\Product\Sku $sku)
  * @method Gpupo\SubmarinoSdk\Entity\Product\Manufacturer getManufacturer()
  * @method setManufacturer(Gpupo\SubmarinoSdk\Entity\Product\Manufacturer $manufacturer)
+ * @method Gpupo\SubmarinoSdk\Entity\Product\MarketStructure getMarketStructure()
+ * @method setMarketStructure(Gpupo\SubmarinoSdk\Entity\Product\MarketStructure $marketStructure)
  * @method string getDeliveryType()
  * @method setDeliveryType(string $deliveryType)
  * @method array getNbm()
@@ -35,12 +37,13 @@ class Product extends EntityAbstract implements EntityInterface
     public function getSchema()
     {
         return  [
-            'id'            => 'string',
-            'name'          => 'string',
-            'sku'           => 'object',
-            'manufacturer'  => 'object',
-            'deliveryType'  => 'string',
-            'nbm'           => 'array',
+            'id'              => 'string',
+            'name'            => 'string',
+            'sku'             => 'object',
+            'manufacturer'    => 'object',
+            'marketStructure' => 'object',
+            'deliveryType'    => 'string',
+            'nbm'             => 'array',
         ];
     }
 
