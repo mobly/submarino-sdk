@@ -68,4 +68,9 @@ class Status extends EntityAbstract implements EntityInterface
 
         return $this;
     }
+
+    public function toArray()
+    {   
+        return array_intersect_key(parent::toArray(), ['status' => null, strtolower($this->getStatus()) => null]);
+    } 
 }
