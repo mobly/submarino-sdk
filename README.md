@@ -1,11 +1,19 @@
 [![Build Status](https://secure.travis-ci.org/gpupo/submarino-sdk.png?branch=master)](http://travis-ci.org/gpupo/submarino-sdk)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gpupo/submarino-sdk/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/gpupo/submarino-sdk/?branch=master)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/baf451b6-4c13-4e84-ae29-c7db67c38b49/mini.png)](https://insight.sensiolabs.com/projects/baf451b6-4c13-4e84-ae29-c7db67c38b49)
 [![Code Climate](https://codeclimate.com/github/gpupo/submarino-sdk/badges/gpa.svg)](https://codeclimate.com/github/gpupo/submarino-sdk)
 [![Test Coverage](https://codeclimate.com/github/gpupo/submarino-sdk/badges/coverage.svg)](https://codeclimate.com/github/gpupo/submarino-sdk/coverage)
-[![Codacy Badge](https://www.codacy.com/project/badge/42d610984533411e9ee267c00106c38d)](https://www.codacy.com/app/g/submarino-sdk)
+
+# submarino-sdk
 
 SDK Não Oficial para integração a partir de aplicações PHP com as APIs da B2W Marketplace (Submarino, Shoptime, Americanas.com)
+
+---
+
+## Requisitos
+
+* PHP >= *5.4*
+* [curl extension](http://php.net/manual/en/intro.curl.php)
+* [Composer Dependency Manager](http://getcomposer.org)
 
 ---
 
@@ -29,128 +37,147 @@ Você pode verificar suas credenciais Cnova na linha de comando:
 
 ---
 
-### Uso
+# Uso
+
+## Setup
 
 Este exemplo demonstra o uso simplificado a partir do ``Factory``:
 
+``` PHP
 
-    <?php
-    ///...
-    use Gpupo\SubmarinoSdk\Factory;
+use Gpupo\SubmarinoSdk\Factory;
 
-    $submarinoSdk = Factory::getInstance()->setup(['token' => '7Ao82svbm#6', 'version' => 'sandbox']);
+$submarinoSdk = Factory::getInstance()->setup([
+    'token'     => '7Ao82svbm#6',
+    'version'   => 'sandbox',
+]);
 
-    $manager = $submarinoSdk->factoryManager('product'));
+```
 
-    // Acesso a lista de produtos cadastrados:
-    $produtosCadastrados = $manager->fetch(); // Collection de Objetos Product
+## Acesso a lista de produtos cadastrados
 
-    // Acesso a informações de um produto cadastrado e com identificador conhecido:
-    $produto = $manager->findById(9)); // Objeto Produto
-    echo $product->getName(); // Acesso ao nome do produto de Id 9
+``` PHP
+
+$manager = $submarinoSdk->factoryManager('product'));
+$produtosCadastrados = $manager->fetch(); // Collection de Objetos Product
+
+```
+
+## Acesso a informações de um produto específico
+
+``` PHP
+$produto = $manager->findById(9));
+echo $product->getName();
+
+```
+
+## Criação de um produto
+
+Veja o formato de ``$data`` em Resources/fixture/Products.json
+
+``` PHP
+
+$data = [];
+$product = $submarinoSdk->createProduct($data);
+
+foreach ($data['sku'] as $item) {
+    $sku = $submarinoSdk->createSku($item);
+    $product->getSku()->add($sku);
+}
+
+$manager->save($product);
+
+```
+
+## Exemplos de manutenção de Produtos
+
+``` PHP
+
+$manager = $submarinoSdk->factoryManager('product'));
+
+// Acesso a lista de produtos cadastrados:
+$produtosCadastrados = $manager->fetch(); // Collection de Objetos Product
+
+// Acesso a informações de um produto cadastrado e com identificador conhecido:
+$produto = $manager->findById(9)); // Objeto Produto
+echo $product->getName(); // Acesso ao nome do produto #9
 
 
-    // Criação de um produto:
-    $data = []; // Veja o formato de $data em Resources/fixture/Products.json
-    $product = $submarinoSdk->createProduct($data);
+// Criação de um produto:
+$data = []; // Veja o formato de $data em Resources/fixture/Products.json
+$product = $submarinoSdk->createProduct($data);
 
-    foreach ($data['sku'] as $item) {
-        $sku = $submarinoSdk->createSku($item);
-        $product->getSku()->add($sku);
-    }
+foreach ($data['sku'] as $item) {
+    $sku = $submarinoSdk->createSku($item);
+    $product->getSku()->add($sku);
+}
 
-    $manager->save($product);
+$manager->save($product);
 
+//Adicionando SKU ao produto:
+$skuData = []; // Defina o valor deste array conforme o esquema disponível em Resources/
+$novoSku = $submarinoSdk->createSku($skuData);
+$product->getSku()->add($novoSku);
+$manager->save($product);
 
-
-### Exemplos de manutenção de Produtos
-
-
-    <?php
-    // ...
-
-    $manager = $submarinoSdk->factoryManager('product'));
-
-    // Acesso a lista de produtos cadastrados:
-    $produtosCadastrados = $manager->fetch(); // Collection de Objetos Product
-
-    // Acesso a informações de um produto cadastrado e com identificador conhecido:
-    $produto = $manager->findById(9)); // Objeto Produto
-    echo $product->getName(); // Acesso ao nome do produto #9
-
-
-    // Criação de um produto:
-    $data = []; // Veja o formato de $data em Resources/fixture/Products.json
-    $product = $submarinoSdk->createProduct($data);
-
-    foreach ($data['sku'] as $item) {
-        $sku = $submarinoSdk->createSku($item);
-        $product->getSku()->add($sku);
-    }
-
-    $manager->save($product);
-
-    //Adicionando SKU ao produto:
-    $skuData = []; // Defina o valor deste array conforme o esquema disponível em Resources/
-    $novoSku = $submarinoSdk->createSku($skuData);
-    $product->getSku()->add($novoSku);
-    $manager->save($product);
+```
 
 ### Exemplos de manutenção de Pedidos
 
-    <?php
-    //...
+``` PHP
 
-    $manager = $submarinoSdk->factoryManager('order'));
+$manager = $submarinoSdk->factoryManager('order'));
 
-    $orderList = $manager->fetch(); //Recebe uma coleção ``\Gpupo\SubmarinoSdk\Entity\Order\Order``
+$orderList = $manager->fetch(); //Recebe uma coleção ``\Gpupo\SubmarinoSdk\Entity\Order\Order``
 
-    foreach ($orderList as $order) {
-    	//Atualizando dados de ENVIO do pedido:
-       	$order->getStatus()->setStatus('DELIVERED')
-       		->getDelivered()->setDeliveredCustomerDate(date('Y-m-d H:i:s'))
-       		->setTrackingProtocol('RE983737722BR')
-            ->setEstimatedDelivery('2015-12-25 01:00:00');
-    	$manager->saveStatus($order);
-    }
+foreach ($orderList as $order) {
+	//Atualizando dados de ENVIO do pedido:
+   	$order->getStatus()->setStatus('DELIVERED')
+   		->getDelivered()->setDeliveredCustomerDate(date('Y-m-d H:i:s'))
+   		->setTrackingProtocol('RE983737722BR')
+        ->setEstimatedDelivery('2015-12-25 01:00:00');
+	$manager->saveStatus($order);
+}
 
-    //Acessando informações de um pedido específico
+//Acessando informações de um pedido específico
 
-    $order = $manager->findById(339938882);
-    echo $order->getId(); //339938882
-    echo $order->getSiteId(); // 03-589-01
-    echo $order->getStore(); // SUBMARINO
-    echo $order->getStatus(); // PROCESSING
+$order = $manager->findById(339938882);
+echo $order->getId(); //339938882
+echo $order->getSiteId(); // 03-589-01
+echo $order->getStore(); // SUBMARINO
+echo $order->getStatus(); // PROCESSING
 
-    //Movendo pedido de situação na B2W:
-    $order->getStatus()->setStatus('PROCESSING');
-    $manager->saveStatus($order);
+//Movendo pedido de situação na B2W:
+$order->getStatus()->setStatus('PROCESSING');
+$manager->saveStatus($order);
 
+```
 
 #### Uso de cache para otimização de updates
 
-    <?php
+``` PHP
 
-    use Gpupo\Cache\CacheItem;
-    use Gpupo\Cache\CacheItemPool;
-    use Gpupo\SubmarinoSdk\Entity\Product\Factory;
+use Gpupo\Cache\CacheItem;
+use Gpupo\Cache\CacheItemPool;
+use Gpupo\SubmarinoSdk\Entity\Product\Factory;
 
-    $data = []; //Your SKU array!
+$data = []; //Your SKU array!
 
-    $sku = Factory::createSku($data);
+$sku = Factory::createSku($data);
 
-    $pool = new CacheItemPool('Memcached');
-    $key = 'sku-foo';
-    $item = new CacheItem($key);
-    $item->set($sku, 60);
-    $pool->save($item);
+$pool = new CacheItemPool('Memcached');
+$key = 'sku-foo';
+$item = new CacheItem($key);
+$item->set($sku, 60);
+$pool->save($item);
 
-    // mude o mundo... e pense que está em uma nova execução, alguns minutos depois ...
-    $sku = Factory::createSku($data);
-    $previousSku = $pool->getItem($key)->get();
-    $sku->setPrevious($previousSku);
-    $sku->save();
+// mude o mundo... e pense que está em uma nova execução, alguns minutos depois ...
+$sku = Factory::createSku($data);
+$previousSku = $pool->getItem($key)->get();
+$sku->setPrevious($previousSku);
+$sku->save();
 
+```
 ----
 
 * [Documentação oficial](https://api-sandbox.bonmarketplace.com.br/docs/)
@@ -164,7 +191,6 @@ MIT, see [LICENSE](https://github.com/gpupo/submarino-sdk/blob/master/LICENSE).
 ## Contributors
 
 - [@gpupo](https://github.com/gpupo)
-- [@danielcosta](https://github.com/danielcosta)
 - [All Contributors](https://github.com/gpupo/submarino-sdk/contributors)
 
 ---
@@ -183,11 +209,15 @@ Personalize a configuração do ``phpunit``:
 
 Insira sua Token de Sandbox em ``phpunit.xml``:
 
+``` XML
+
     <!-- Customize your parameters ! -->
     <php>
         <const name="API_TOKEN" value=""/>
         <const name="VERBOSE" value="false"/>
     </php>
+
+```
 
 Rode os testes localmente:
 
@@ -209,6 +239,7 @@ A lista abaixo é gerada a partir da saída da execução dos testes unitários:
 <!--
 phpunit --testdox | grep -vi php |  sed "s/.*\[*]/-/" | sed 's/.*Gpupo.*/&\'$'\n/g' | sed 's/.*Gpupo.*/&\'$'\n/g' | sed 's/Gpupo\\Tests\\SubmarinoSdk\\/### /g' | sed '/./,/^$/!d' >> README.md
 -->
+
 ### Client
 
 - Gerencia uri de recurso
@@ -222,6 +253,15 @@ phpunit --testdox | grep -vi php |  sed "s/.*\[*]/-/" | sed 's/.*Gpupo.*/&\'$'\n
 - Cada cliente possui colecao de telefones
 - Cada cliente possui objeto pessoa fisica
 - Cada cliente possui objeto pessoa juridica
+- Possui método ``getPf()`` para acessar Pf
+- Possui método ``setPf()`` que define Pf
+- Possui método ``getPj()`` para acessar Pj
+- Possui método ``setPj()`` que define Pj
+- Possui método ``getTelephones()`` para acessar Telephones
+- Possui método ``setTelephones()`` que define Telephones
+- Possui método ``getDeliveryAddress()`` para acessar DeliveryAddress
+- Possui método ``setDeliveryAddress()`` que define DeliveryAddress
+- Entidade é uma Coleção
 
 ### Entity\Order\Customer\Telephones\Telephones
 
@@ -242,6 +282,8 @@ phpunit --testdox | grep -vi php |  sed "s/.*\[*]/-/" | sed 's/.*Gpupo.*/&\'$'\n
 - Cada pedido possui objeto cliente
 - Cada pedido possui objeto com dados de cobrança
 - Cada pedido possui colecao de produtos
+- Cada pedido possui colecao de metodos de pagamento
+- Cada pedido possui objeto com dados de entrega
 - Cada pedido possui objeto status
 - Possui loja de origem
 - Possui valor total do pedido
@@ -252,6 +294,44 @@ phpunit --testdox | grep -vi php |  sed "s/.*\[*]/-/" | sed 's/.*Gpupo.*/&\'$'\n
 - O total real contém produtos somado a frete menos o desconto
 - O total real possui mesmo valor de total amount se não houver juros
 - O total real contém total menos juros
+- Possui método ``setId()`` que define Id
+- Possui método ``getSiteId()`` para acessar SiteId
+- Possui método ``setSiteId()`` que define SiteId
+- Possui método ``getStore()`` para acessar Store
+- Possui método ``setStore()`` que define Store
+- Possui método ``getPurchaseDate()`` para acessar PurchaseDate
+- Possui método ``setPurchaseDate()`` que define PurchaseDate
+- Possui método ``getLastUpdate()`` para acessar LastUpdate
+- Possui método ``setLastUpdate()`` que define LastUpdate
+- Possui método ``getPurchaseTimestamp()`` para acessar PurchaseTimestamp
+- Possui método ``setPurchaseTimestamp()`` que define PurchaseTimestamp
+- Possui método ``getLastUpdateTimestamp()`` para acessar LastUpdateTimestamp
+- Possui método ``setLastUpdateTimestamp()`` que define LastUpdateTimestamp
+- Possui método ``getStatus()`` para acessar Status
+- Possui método ``setStatus()`` que define Status
+- Possui método ``getInvoiced()`` para acessar Invoiced
+- Possui método ``setInvoiced()`` que define Invoiced
+- Possui método ``getEstimatedDeliveryDate()`` para acessar EstimatedDeliveryDate
+- Possui método ``setEstimatedDeliveryDate()`` que define EstimatedDeliveryDate
+- Possui método ``getCustomer()`` para acessar Customer
+- Possui método ``setCustomer()`` que define Customer
+- Possui método ``getPayer()`` para acessar Payer
+- Possui método ``setPayer()`` que define Payer
+- Possui método ``getTotalAmount()`` para acessar TotalAmount
+- Possui método ``setTotalAmount()`` que define TotalAmount
+- Possui método ``getTotalFreight()`` para acessar TotalFreight
+- Possui método ``setTotalFreight()`` que define TotalFreight
+- Possui método ``getTotalDiscount()`` para acessar TotalDiscount
+- Possui método ``setTotalDiscount()`` que define TotalDiscount
+- Possui método ``getTotalInterest()`` para acessar TotalInterest
+- Possui método ``setTotalInterest()`` que define TotalInterest
+- Possui método ``getProducts()`` para acessar Products
+- Possui método ``setProducts()`` que define Products
+- Possui método ``getShipping()`` para acessar Shipping
+- Possui método ``setShipping()`` que define Shipping
+- Possui método ``getPaymentMethods()`` para acessar PaymentMethods
+- Possui método ``setPaymentMethods()`` que define PaymentMethods
+- Entidade é uma Coleção
 
 ### Entity\Order\Payer\Payer
 
@@ -260,9 +340,45 @@ phpunit --testdox | grep -vi php |  sed "s/.*\[*]/-/" | sed 's/.*Gpupo.*/&\'$'\n
 - Cada pagador possui objeto pessoa fisica
 - Cada pagador possui objeto pessoa juridica
 
-### Entity\Order\Products\Products
+### Entity\Order\PaymentMethods\PaymentMethod
+
+- Cada pedido possui uma coleção de objetos payment method
+- Possui método ``getSequential()`` para acessar Sequential
+- Possui método ``setSequential()`` que define Sequential
+- Possui método ``getId()`` para acessar Id
+- Possui método ``setId()`` que define Id
+- Possui método ``getValue()`` para acessar Value
+- Possui método ``setValue()`` que define Value
+- Entidade é uma Coleção
+
+### Entity\Order\Products\Product
 
 - Cada pedido possui uma coleção de objetos produto
+- Possui método ``getLink()`` para acessar Link
+- Possui método ``setLink()`` que define Link
+- Possui método ``getQuantity()`` para acessar Quantity
+- Possui método ``setQuantity()`` que define Quantity
+- Possui método ``getPrice()`` para acessar Price
+- Possui método ``setPrice()`` que define Price
+- Possui método ``getFreight()`` para acessar Freight
+- Possui método ``setFreight()`` que define Freight
+- Possui método ``getDiscount()`` para acessar Discount
+- Possui método ``setDiscount()`` que define Discount
+- Entidade é uma Coleção
+
+### Entity\Order\Shipping
+
+- Possui método ``getShippingEstimateId()`` para acessar ShippingEstimateId
+- Possui método ``setShippingEstimateId()`` que define ShippingEstimateId
+- Possui método ``getShippingMethodId()`` para acessar ShippingMethodId
+- Possui método ``setShippingMethodId()`` que define ShippingMethodId
+- Possui método ``getShippingMethodName()`` para acessar ShippingMethodName
+- Possui método ``setShippingMethodName()`` que define ShippingMethodName
+- Possui método ``getCalculationType()`` para acessar CalculationType
+- Possui método ``setCalculationType()`` que define CalculationType
+- Possui método ``getShippingMethodDisplayName()`` para acessar ShippingMethodDisplayName
+- Possui método ``setShippingMethodDisplayName()`` que define ShippingMethodDisplayName
+- Entidade é uma Coleção
 
 ### Entity\Order\Status\Status
 
