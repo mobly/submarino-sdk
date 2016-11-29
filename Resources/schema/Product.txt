@@ -25,9 +25,14 @@ manufacturer: {
   model: string,
   warrantyTime: integer
 },
+marketStructure: {
+  categoryId: integer,
+  subCategoryId: integer, 
+  familyId: integer, 
+  subFamilyId: integer
+},
 deliveryType: string,
 nbm: {
   number: integer,
   origin: integer
 }
-

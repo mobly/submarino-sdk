@@ -47,6 +47,12 @@
                 "model":"Bar",
                 "warrantyTime":30
             },
+            "marketStructure": {
+                "categoryId": 421,
+                "subCategoryId": 520,
+                "familyId": 428,
+                "subFamilyId": 429
+            },
             "nbm":{
                 "number":1041011,
                 "origin":2
@@ -101,6 +107,12 @@
                 "model":"Bar",
                 "warrantyTime":30
             },
+            "marketStructure": {
+                "categoryId": 123,
+                "subCategoryId": 456,
+                "familyId": 789,
+                "subFamilyId": 12
+            },
             "nbm":{
                 "number":1041011,
                 "origin":2
@@ -154,6 +166,12 @@
                 "name":"Foo",
                 "model":"Bar",
                 "warrantyTime":30
+            },
+            "marketStructure": {
+                "categoryId": 741,
+                "subCategoryId": 852,
+                "familyId": 963,
+                "subFamilyId": 321
             },
             "nbm":{
                 "number":1041011,
