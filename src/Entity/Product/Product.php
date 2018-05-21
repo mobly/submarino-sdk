@@ -41,7 +41,6 @@ class Product extends EntityAbstract implements EntityInterface
             'name'            => 'string',
             'sku'             => 'object',
             'manufacturer'    => 'object',
-            'marketStructure' => 'object',
             'deliveryType'    => 'string',
             'nbm'             => 'array',
         ];

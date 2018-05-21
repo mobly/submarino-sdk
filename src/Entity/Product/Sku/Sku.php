@@ -63,6 +63,7 @@ class Sku extends EntityAbstract implements EntityInterface
             'updatedAt'     => 'string',
             'urlImage'      => 'array',
             'crossDocking'  => 'integer',
+            'marketStructure' => 'object',
         ];
     }
 
