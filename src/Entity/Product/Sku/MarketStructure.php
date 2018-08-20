@@ -21,6 +21,8 @@ class MarketStructure extends EntityAbstract implements EntityInterface
         return [
             'categoryId'    => 'integer',
             'subCategoryId' => 'integer',
+            'familyId'      => 'integer',
+            'subFamilyId'   => 'integer',
         ];
     }
 }
